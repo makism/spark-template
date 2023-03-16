@@ -1,0 +1,12 @@
+pyspark==3.3.0
+
+pandas
+
+botocore
+
+pydantic
+pydantic[dotenv]
+
+pytest
+black
+isort

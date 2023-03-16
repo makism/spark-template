@@ -1,0 +1,41 @@
+networks:
+  spark-cluster:
+    driver: bridge
+
+services:
+  spark-master:
+    image: spark-master:latest
+    container_name: spark-master
+    environment:
+      - SPARK_WORKLOAD=master
+    ports:
+      - 8080:8080
+      - 7077:7077
+    networks:
+      - spark-cluster
+    volumes:
+      - ./logs:/opt/etl_logs/
+      - ./datalake/:/datalake/
+  spark-workers:
+    image: spark-worker:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - SPARK_WORKLOAD=worker
+      - SPARK_WORKER_CORES=1
+      - SPARK_WORKER_MEMORY=1G
+    ports:
+      - 9091-9099:8080
+      - 7000-7009:7000
+    networks:
+      - spark-cluster
+    links:
+      - spark-master
+    volumes:
+      - ./logs:/opt/etl_logs/
+      - ./datalake/:/datalake/
+    depends_on:
+      - spark-master
