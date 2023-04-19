@@ -36,11 +36,7 @@ def check_input_sources(
 if __name__ == "__main__":
     spark = spark_session()
 
-    raw_df = (
-        spark.read.option("recursiveFileLookup", "true")
-        .schema(SCHEMA_RAW)
-        .json("/data/raw/*.json")
-    )
+    raw_df = spark.read.option("recursiveFileLookup", "true").json("/data/raw/*.json")
 
     raw_df = raw_df.withColumn("_source_filename", F.input_file_name())
 
